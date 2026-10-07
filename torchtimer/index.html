@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="./common-web/favicon.png" type="image/png" />
+  <link rel="apple-touch-icon" href="./common-web/apple-touch-icon.png" />
+  <title>Torchtimer — reese.biz</title>
+  <meta name="description" content="Torch timers for Shadowdark." />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Torchtimer" />
+  <meta property="og:description" content="Torch timers for Shadowdark." />
+  <meta property="og:url" content="https://reese.biz/torchtimer/" />
+  <meta property="og:site_name" content="Torchtimer" />
+
+  <!-- Apply theme before render to prevent flash. Torchtimer defaults to dark. -->
+  <script>
+    (function () {
+      var saved = null;
+      try { saved = localStorage.getItem('rb-theme'); } catch (e) { /* Site data blocked */ }
+      var theme = saved || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+
+  <link rel="stylesheet" href="common-web/tokens.css?v=8ccf768c" />
+  <link rel="stylesheet" href="common-web/layout.css?v=8ccf768c" />
+  <link rel="stylesheet" href="css/base.css?v=8ccf768c" />
+  <link rel="stylesheet" href="css/overlays.css?v=8ccf768c" />
+  <link rel="stylesheet" href="css/torch.css?v=8ccf768c" />
+  <link rel="stylesheet" href="css/controls.css?v=8ccf768c" />
+  <link rel="stylesheet" href="css/global-bar.css?v=8ccf768c" />
+  <link rel="stylesheet" href="css/modals.css?v=8ccf768c" />
+  <link rel="stylesheet" href="css/dungeon-mode.css?v=8ccf768c" />
+  <link rel="stylesheet" href="css/responsive.css?v=8ccf768c" />
+</head>
+<body>
+
+  <header>
+    <div id="header-inner">
+      <div id="header-branding">
+        <h1><a class="h1-prefix" href="https://reese.biz" target="_blank" rel="noopener">reese.biz</a><a class="h1-title" href="./">Torchtimer ⏱️</a></h1>
+        <p>Torch timers for <a href="https://www.thearcanelibrary.com/pages/shadowdark" target="_blank" rel="noopener">Shadowdark</a>. Looking for <a href="https://reese.biz/torchfinder/" target="_blank" rel="noopener">content</a>?</p>
+      </div>
+      <div id="header-controls">
+        <button id="btn-go-live">Go Live</button>
+        <button id="btn-copy-live" hidden>Copy Link</button>
+        <button id="btn-qr-live" hidden aria-pressed="false">Show QR</button>
+        <button id="btn-share-offline" hidden>Copy Offline Link</button>
+        <button id="btn-qr-offline" hidden aria-pressed="false">Show Offline QR</button>
+        <button id="theme-toggle" class="theme-toggle" aria-label="Switch to light mode">🌙</button>
+        <div id="live-badge" hidden aria-live="polite">
+          <span id="live-badge-text">Connected to Torchbearer</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="stage" aria-label="Torch timers"></main>
+
+  <div id="global-bar" role="toolbar" aria-label="Global controls">
+    <div id="global-bar-inner">
+      <div id="global-bar-multi" hidden>
+        <button id="btn-pause-all" disabled>Pause All</button>
+        <button id="btn-pass-time-global">Pass Time for All</button>
+        <button id="btn-add-time-global">Add Time for All</button>
+        <button id="btn-next-round-global" disabled>Next Round for All</button>
+      </div>
+      <div id="global-bar-row2">
+        <button id="btn-reset">Reset</button>
+        <button id="btn-sound" aria-pressed="false">Sound 🔇</button>
+        <button id="btn-timer-toggle" aria-pressed="false">Dungeon Mode 😎</button>
+      </div>
+      <div id="global-bar-clocks">
+        <button id="btn-hide-clocks" aria-pressed="true">Viewer Clocks: On</button>
+        <button id="btn-local-clocks" aria-pressed="true">My Clocks: On</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast notifications -->
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Custom Duration modal -->
+  <div id="custom-duration-modal" hidden aria-hidden="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-inner" role="dialog" aria-modal="true" aria-labelledby="custom-duration-title">
+      <h3 id="custom-duration-title">Custom Duration</h3>
+      <div class="modal-input-row">
+        <input type="number" id="custom-duration-input" min="1" max="1440" placeholder="minutes" aria-label="Custom duration in minutes" />
+        <button id="custom-duration-apply">Apply</button>
+      </div>
+      <div class="modal-footer">
+        <button id="custom-duration-cancel" data-modal-dismiss>Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm remove modal (shown only when removing a lit torch) -->
+  <div id="confirm-remove-modal" hidden aria-hidden="true">
+    <div class="modal-backdrop" id="confirm-remove-backdrop"></div>
+    <div class="modal-inner" role="dialog" aria-modal="true" aria-labelledby="confirm-remove-title">
+      <h3 id="confirm-remove-title">Remove Torch?</h3>
+      <p class="modal-body-text">This torch is still burning. Remove it anyway?</p>
+      <div class="modal-footer">
+        <button id="confirm-remove-cancel" data-modal-dismiss>Cancel</button>
+        <button id="confirm-remove-ok">Remove</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm extinguish modal -->
+  <div id="confirm-extinguish-modal" hidden aria-hidden="true">
+    <div class="modal-backdrop" id="confirm-extinguish-backdrop"></div>
+    <div class="modal-inner" role="dialog" aria-modal="true" aria-labelledby="confirm-extinguish-title">
+      <h3 id="confirm-extinguish-title">Extinguish Torch?</h3>
+      <p class="modal-body-text">This torch is still burning. Extinguish it anyway?</p>
+      <div class="modal-footer">
+        <button id="confirm-extinguish-cancel" data-modal-dismiss>Cancel</button>
+        <button id="confirm-extinguish-ok">Extinguish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm mode switch modal -->
+  <div id="confirm-mode-switch-modal" hidden aria-hidden="true">
+    <div class="modal-backdrop" id="confirm-mode-switch-backdrop"></div>
+    <div class="modal-inner" role="dialog" aria-modal="true" aria-labelledby="confirm-mode-switch-title">
+      <h3 id="confirm-mode-switch-title">Switch Mode?</h3>
+      <p class="modal-body-text">This torch is still burning. Switch its mode anyway?</p>
+      <div class="modal-footer">
+        <button id="confirm-mode-switch-cancel" data-modal-dismiss>Cancel</button>
+        <button id="confirm-mode-switch-ok">Switch</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm reset modal -->
+  <div id="confirm-reset-modal" hidden aria-hidden="true">
+    <div class="modal-backdrop" id="confirm-reset-backdrop"></div>
+    <div class="modal-inner" role="dialog" aria-modal="true" aria-labelledby="confirm-reset-title">
+      <h3 id="confirm-reset-title">Reset Everything?</h3>
+      <p class="modal-body-text">This will disconnect any live session and clear all torches.</p>
+      <div class="modal-footer">
+        <button id="confirm-reset-cancel" data-modal-dismiss>Cancel</button>
+        <button id="confirm-reset-ok">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm show viewer clocks modal -->
+  <div id="confirm-viewer-clocks-modal" hidden aria-hidden="true">
+    <div class="modal-backdrop" id="confirm-viewer-clocks-backdrop"></div>
+    <div class="modal-inner" role="dialog" aria-modal="true" aria-labelledby="confirm-viewer-clocks-title">
+      <h3 id="confirm-viewer-clocks-title">Show Viewer Clocks?</h3>
+      <p class="modal-body-text">This will reveal the clock timers to everyone viewing your session.</p>
+      <div class="modal-footer">
+        <button id="confirm-viewer-clocks-cancel" data-modal-dismiss>Cancel</button>
+        <button id="confirm-viewer-clocks-ok">Show Clocks</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm disconnect modal -->
+  <div id="confirm-disconnect-modal" hidden aria-hidden="true">
+    <div class="modal-backdrop" id="confirm-disconnect-backdrop"></div>
+    <div class="modal-inner" role="dialog" aria-modal="true" aria-labelledby="confirm-disconnect-title">
+      <h3 id="confirm-disconnect-title">Disconnect?</h3>
+      <p class="modal-body-text" id="confirm-disconnect-body"></p>
+      <div class="modal-footer">
+        <button id="confirm-disconnect-cancel" data-modal-dismiss>Cancel</button>
+        <button id="confirm-disconnect-ok">Disconnect</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QR Code modal -->
+  <div id="qr-modal" hidden aria-hidden="true">
+    <div class="modal-backdrop" id="qr-modal-backdrop"></div>
+    <div class="modal-inner" role="dialog" aria-modal="true" aria-labelledby="qr-modal-title">
+      <h3 id="qr-modal-title">QR Code</h3>
+      <div id="qr-modal-content"></div>
+      <div class="modal-footer">
+        <button id="qr-modal-close" data-modal-dismiss>Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pass Time / Pass Rounds modal -->
+  <div id="pass-time-modal" hidden aria-hidden="true">
+    <div class="modal-backdrop" id="modal-backdrop"></div>
+    <div class="modal-inner" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <h3 id="modal-title">Pass Time</h3>
+      <div class="modal-quick-btns" id="modal-quick-time">
+        <button data-minutes="5">5 min</button>
+        <button data-minutes="10">10 min</button>
+        <button data-minutes="15">15 min</button>
+        <button data-minutes="30">30 min</button>
+      </div>
+      <div class="modal-quick-btns" id="modal-quick-rounds" hidden>
+        <button data-rounds="1">1</button>
+        <button data-rounds="2">2</button>
+        <button data-rounds="3">3</button>
+        <button data-rounds="5">5</button>
+      </div>
+      <div id="modal-time-group" class="modal-input-row">
+        <div class="modal-time-group">
+          <input type="number" id="modal-minutes-input" min="0" max="1440" placeholder="0" aria-label="Minutes" />
+          <span class="modal-time-label">min</span>
+        </div>
+        <div class="modal-time-group">
+          <input type="number" id="modal-seconds-input" min="0" max="59" placeholder="0" aria-label="Seconds" />
+          <span class="modal-time-label">sec</span>
+        </div>
+        <button id="modal-apply">Apply</button>
+      </div>
+      <div id="modal-round-group" class="modal-input-row" hidden>
+        <div class="modal-time-group">
+          <input type="number" id="modal-rounds-input" min="1" max="99" placeholder="1" aria-label="Rounds" />
+          <span class="modal-time-label">rounds</span>
+        </div>
+        <button id="modal-apply-rounds">Apply</button>
+      </div>
+      <div class="modal-footer">
+        <button id="modal-cancel" data-modal-dismiss>Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div id="footer-inner">
+      <p>
+        &copy; 2026 <a href="https://reese.biz/about.html" target="_blank" rel="noopener">Reese Schultz</a>
+      </p>
+      <p>
+        A <a href="https://reese.biz" target="_blank" rel="noopener">reese.biz</a> project.
+        Found an issue? Email [me at reese dot biz].
+      </p>
+      <p>
+        <a href="https://reese.biz/privacy.html" target="_blank" rel="noopener">Privacy</a>
+        &middot;
+        <a href="https://reese.biz/attributions.html" target="_blank" rel="noopener">Attributions</a>
+      </p>
+    </div>
+    <div id="footer-disclaimer">
+      reese.biz is not affiliated with The Arcane Library, LLC. Shadowdark RPG © 2023 The Arcane Library, LLC.
+    </div>
+  </footer>
+
+  <noscript>
+    <div class="noscript-notice">
+      <strong>JavaScript is required to use Torchtimer.</strong>
+    </div>
+  </noscript>
+
+  <!-- SVG filter for rough organic edges on torch graphics -->
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <filter id="torch-rough" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="0.072" numOctaves="3" seed="7" result="noise" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    </defs>
+  </svg>
+
+  <canvas id="flame-overlay"></canvas>
+  <canvas id="fire-overlay"></canvas>
+
+  <div id="dungeon-vignette"></div>
+
+  <script type="module" src="js/main.js?v=b03e90a1"></script>
+</body>
+</html>

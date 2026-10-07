@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:wfw="http://wellformedweb.org/CommentAPI/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" xmlns:slash="http://purl.org/rss/1.0/modules/slash/" version="2.0">
+  <channel>
+    <title>reese.biz</title>
+    <link>https://reese.biz/</link>
+    <atom:link href="https://reese.biz/blog/feed.xml" rel="self" type="application/rss+xml"/>
+    <description>Writing by Reese on fictional worlds and tech stuff.</description>
+    <lastBuildDate>Wed, 07 Oct 2026 10:51:05 GMT</lastBuildDate>
+    <language>en</language>
+    <generator>Lume 3.2.6</generator>
+    <item>
+      <title>About my tools for Shadowdark [DEVLOG]</title>
+      <link>https://reese.biz/blog/about-my-tools-for-shadowdark.html</link>
+      <guid isPermaLink="false">https://reese.biz/blog/about-my-tools-for-shadowdark.html</guid>
+      <description>Some background on Torchfinder and Torchtimer.</description>
+      <content:encoded>
+        <![CDATA[<p>Welcome to the first blog post at <code>[car dealership commercial voice]</code> <em><strong>REESE DOT BIZ. DOT BIZ. DOT BIZ. DOT BIZ.</strong></em></p>
+<blockquote>
+<p><strong>What is this?</strong> Why, this is a highly professional blog about whatever I think is a good idea at the time, which is probably a terrible idea. It's written by me, Reese. I came up with the name for the website all by myself.</p>
+</blockquote>
+<p>Today, I'm here to tell you about a couple of tools made to be used in conjunction with a TTRPG called <a href="https://www.thearcanelibrary.com/">Shadowdark</a>:</p>
+<ul>
+<li><a href="https://reese.biz/torchfinder">Torchfinder</a> - Filterable content lookup including supplements, campaigns, rules, zines, etc.</li>
+<li><a href="https://reese.biz/torchtimer">Torchtimer</a> - Up to eight torches that can be shared and synchronized online in real-ish-time.</li>
+</ul>
+<p>I built them in early 2026. Initially, I wasn't sure about the branding and hosting, so I hadn't publicized the apps in any meaningful way. Yet, people were finding and using them. Cloudflare indicated hits and worker invocations going up, right around when I decided that <code>reese.biz</code> would become their forever home. Well, here they are!</p>
+<p>Here's some background on the apps...</p>
+<h2>Torchfinder</h2>
+<p><a href="https://reese.biz/torchfinder">Torchfinder</a> was inspired by <a href="https://adventurelookup.com/">Adventure Lookup</a>, an app for locating D&amp;D content new and old.</p>
+<p>It was instructive for the design phase in terms of presentation and naming conventions. Torchfinder is, however, not a fork. It's a completely different codebase. What distinguishes it is the static, modular architecture. It lacks server-side code; there's no unwieldy database. The dataset is just structured text fed into the built app by automation. In this format, <a href="https://en.wikipedia.org/wiki/YAML">YAML</a>, the data is sufficiently &quot;human-readable&quot; for, well, determined humans. This makes maintenance and contributions straightforward, while offloading infrastructural costs onto... sorry, GitHub.</p>
+<h2>Torchtimer</h2>
+<p><a href="https://reese.biz/torchtimer">Torchtimer</a> can synchronize torches among friends and not-friends alike. The timers can be randomized, hidden, and switched between time- and round-based modes. Sharing live or offline sessions is easy.</p>
+<blockquote>
+<p><strong>Live vs offline:</strong> A live session is what happens when someone clicks <code>Go Live</code>. A connection is then established with the sync service (hopefully). Sharing the session via <code>Copy Link</code> or <code>Show QR</code> allows others to become viewers. The offline alternative produces (accurately initialized) timings, but without the synchronization, such as the host manually extinguishing a torch or adjusting time.</p>
+</blockquote>
+<p>Yes, there are QR codes, and not for no reason. They're particularly helpful for keeping tabs on a session by phone.</p>
+<h2>Concluding Thoughts</h2>
+<p>I hope you enjoy my contributions to humanity. If you find problems with the apps, or have suggestions, they have links and information for reaching out. Furthermore, a disclaimer:</p>
+<p><em>reese.biz is not affiliated with The Arcane Library, LLC. Shadowdark RPG © 2023 The Arcane Library, LLC.</em></p>
+<p>Torchfinder and Torchtimer are <strong>not</strong> official projects. They're third-party, (ideally) collaborative projects. <em><strong>USE THEM NOW! NOW! NOW! NOW!</strong></em></p>
+]]>
+      </content:encoded>
+      <pubDate>Sun, 19 Jul 2026 00:00:00 GMT</pubDate>
+    </item>
+  </channel>
+</rss>

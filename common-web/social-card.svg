@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#13161e"/>
+
+  <!-- Terminal window -->
+  <rect x="150" y="150" width="900" height="276" rx="6" fill="#1d2535" stroke="#3d4c66" stroke-width="2"/>
+  <line x1="150" y1="193" x2="1050" y2="193" stroke="#3d4c66" stroke-width="2"/>
+  <circle cx="185" cy="172" r="9" fill="#7b8495"/>
+  <circle cx="215" cy="172" r="9" fill="#7b8495"/>
+  <circle cx="245" cy="172" r="9" fill="#7b8495"/>
+
+  <!-- Prompt -->
+  <text x="290" y="340" font-family="Menlo, monospace" font-size="100" font-weight="700" fill="#f5a848">&gt; reese.biz</text>
+  <rect x="962" y="262" width="28" height="82" fill="#f5a848"/>
+
+  <!-- Tagline -->
+  <text x="600" y="515" text-anchor="middle" font-family="Menlo, monospace" font-size="40" fill="#7b8495">Artifacts for gamers and nerds.</text>
+</svg>
